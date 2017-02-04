@@ -1,15 +1,15 @@
 #ifndef RASTERIZER_H
 #define RASTERIZER_H
 
-
+#include <vector>
 #include <iostream>
 #include <Color.h>
 #include <math.h>
 #include <glm.hpp> // This is the main GLM header
-#include <matrix_transform.hpp> 
+#include <matrix_transform.hpp>
 //The attributes of the screen
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 const int SCREEN_BPP = 32;
 
 class Span;
@@ -27,6 +27,7 @@ public:
 	float AreaOfTriangle(float _a, float _b, float _c);
 	void DrawTriangle1(Color * _color0, glm::ivec2 _pos0, Color * _color1, glm::ivec2 _pos1, Color * _color2, glm::ivec2 _pos2);
 	bool pointInTriangle2D(glm::ivec2 _point, glm::ivec2 _pos0, glm::ivec2 _pos1, glm::ivec2 _pos2);
+	int DrawTriangles(std::vector<glm::vec3> * _vertexData, glm::mat4 _MVP);
 };
 
 #endif //RASTERIZER_H

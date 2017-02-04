@@ -11,3 +11,4 @@ main.o : main.cpp
 #linking
 all: main.o Rasterizer.o Color.o
 	gcc -o softRend main.o Rasterizer.o Color.o ./SDL/libs/libSDL.so -lm -lstdc++
+	

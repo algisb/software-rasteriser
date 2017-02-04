@@ -56,7 +56,7 @@ float Rasterizer::AreaOfTriangle(float _a, float _b, float _c)
 
 bool Rasterizer::pointInTriangle2D(glm::ivec2 _point, glm::ivec2 _pos0, glm::ivec2 _pos1, glm::ivec2 _pos2)
 {
-	
+
 	glm::vec2 v0;
 	v0 = (glm::vec2)(_pos1 - _pos0);
 	float vm0 = glm::length(v0);
@@ -81,7 +81,7 @@ bool Rasterizer::pointInTriangle2D(glm::ivec2 _point, glm::ivec2 _pos0, glm::ive
 	glm::vec2 vp2;
 	vp2 = (glm::vec2)(_pos2 - _point);
 	float vpm2 = glm::length(vp2);
-	
+
 	float tA = AreaOfTriangle(vm0,vm1,vm2);
 
 	float u = AreaOfTriangle(vm0, vpm0, vpm1) ;
@@ -232,15 +232,46 @@ void Rasterizer::DrawTriangle1(Color * _color0, glm::ivec2 _pos0, Color * _color
 				float v = AreaOfTriangle(vm1, vpm0, vpm2)/tA;
 				float w = AreaOfTriangle(vm2, vpm1, vpm2)/tA;
 
-				Color tmpCol0 = *_color0 * (w);
-				Color tmpCol1 = *_color1 * (v);
-				Color tmpCol2 = *_color2 * (u);
+				Color tmpCol0 = *_color0 * glm::abs(w);
+				Color tmpCol1 = *_color1 * glm::abs(v);
+				Color tmpCol2 = *_color2 * glm::abs(u);
 				Color tmpCol = tmpCol0 + tmpCol1 + tmpCol2;
-				
+
 				SetPixel(glm::ivec2(x, y), &tmpCol);
 			}
 
 		}
 	}
 
+}
+
+int Rasterizer::DrawTriangles(std::vector<glm::vec3> * _vertexData, glm::mat4 _MVP)
+{
+    Color color0(1.0f, 0.0f, 0.0f, 1.0f);
+    Color color1(0.0f, 1.0f, 0.0f, 1.0f);
+    Color color2(0.0f, 0.0f, 1.0f, 1.0f);
+//
+    for(int i = 0; i < _vertexData->size(); i=i+3)
+    {
+        //glm::vec3 k = (*_vertexData)[i];
+        glm::vec4 v0 = _MVP * glm::vec4((*_vertexData)[i+0].x, (*_vertexData)[i+0].y, (*_vertexData)[i+0].z, 1.0f);
+        glm::vec4 v1 = _MVP * glm::vec4((*_vertexData)[i+1].x, (*_vertexData)[i+1].y, (*_vertexData)[i+1].z, 1.0f);
+        glm::vec4 v2 = _MVP * glm::vec4((*_vertexData)[i+2].x, (*_vertexData)[i+2].y, (*_vertexData)[i+2].z, 1.0f);
+
+        glm::vec2 p0((v0.x / v0.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y / v0.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        glm::vec2 p1((v1.x / v1.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y / v1.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        glm::vec2 p2((v2.x / v2.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y / v2.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+
+        //glm::vec2 p0(v0.x / v0.w + SCREEN_WIDTH / 2, v0.y / v0.w + SCREEN_HEIGHT / 2);
+        //glm::vec2 p1(v1.x / v1.w + SCREEN_WIDTH / 2, v1.y / v1.w + SCREEN_HEIGHT / 2);
+        //glm::vec2 p2(v2.x / v2.w + SCREEN_WIDTH / 2, v2.y / v2.w + SCREEN_HEIGHT / 2);
+        //DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
+        //printf("\n  %f, %f \n", p0.x, p0.y);
+        //printf("    %f, %f \n", p1.x, p1.y);
+        //printf("    %f, %f \n", p2.x, p2.y);
+        //DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
+        DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
+    }
+
+    return 0;
 }

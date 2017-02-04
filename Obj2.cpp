@@ -7,7 +7,7 @@ Obj2::Obj2(char * fileName)
 	vt = false;
 	vn = false;
 
-	//creates a read/wrie files stream 
+	//creates a read/wrie files stream
 	ifstream myfile(file);
 
 	while (!myfile.eof())
@@ -46,7 +46,7 @@ void Obj2::loadV()
 		vType y = 0;
 		vType z = 0;
 
-		//creates a read/wrie files stream 
+		//creates a read/wrie files stream
 		ifstream myfile(file);
 
 		while (!myfile.eof())
@@ -108,7 +108,7 @@ void Obj2::loadVT()
 		vType x = 0;
 		vType y = 0;
 
-		//creates a read/wrie files stream 
+		//creates a read/wrie files stream
 		ifstream myfile(file);
 
 		while (!myfile.eof())
@@ -168,7 +168,7 @@ void Obj2::loadVN()
 		vType y = 0;
 		vType z = 0;
 
-		//creates a read/wrie files stream 
+		//creates a read/wrie files stream
 		ifstream myfile(file);
 
 		while (!myfile.eof())
@@ -229,7 +229,7 @@ void Obj2::loadF()
 	int tempfV[4];
 	int tempfVT[4];
 	int tempfVN[4];
-	//creates a read/wrie files stream 
+	//creates a read/wrie files stream
 	ifstream myfile(file);
 
 	while (!myfile.eof())
@@ -259,7 +259,7 @@ void Obj2::loadF()
 					inputS >> f >> tempfV[0] >> f >> tempfVT[0] >> f >> tempfVN[0]    >>     tempfV[1] >> f >> tempfVT[1] >> f >> tempfVN[1]    >>    tempfV[2] >> f >> tempfVT[2] >> f >> tempfVN[2]    >>   tempfV[3] >> f >> tempfVT[3] >> f >> tempfVN[3];
 					tempFace.quad = true;
 				}
-				
+
 				for (int x = 0; x < nG; x++)
 				{
 					tempFace.fV.push_back(tempfV[x]);
@@ -364,7 +364,7 @@ void Obj2::loadF()
 					inputS >> f >> tempfV[0] >> tempfV[1] >> tempfV[2];
 					tempFace.quad = false;
 				}
-				
+
 				if (nG == 4)
 				{
 					inputS >> f >> tempfV[0] >> tempfV[1] >> tempfV[2] >> tempfV[3];
@@ -506,9 +506,9 @@ void Obj2::convertVertexRTE()
 {
 	if (v == true)
 	{
-		
+
 		int fNum = 0;
-		
+
 		for (unsigned int i = 0; i < F.size() ; i++)
 		{
 
@@ -577,10 +577,10 @@ void Obj2::convertVertexRTE()
 				{
 					VRTE.push_back(tempVert[0][d]);
 				}
-			
+
 
 			}
-			
+
 
 
 			fNum++;
@@ -836,6 +836,10 @@ void Obj2::loadAll()
 	loadVT();
 	loadVN();
 	loadF();
+	convertVertexRTE();
+	convertVertexTextureRTE();
+	convertVertexNormalRTE();
+	convertoObjToGlm();
 }
 
 void Obj2::printAll()
