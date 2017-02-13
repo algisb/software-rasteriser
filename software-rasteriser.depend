@@ -1137,9 +1137,9 @@
 
 1478948841 /home/software-rasteriser/glm/glm/simd/integer.h
 
-1486246154 source:/home/software-rasteriser/Rasterizer.cpp
+1487015667 source:/home/software-rasteriser/Rasterizer.cpp
 
-1486245621 source:/home/software-rasteriser/main.cpp
+1487011352 source:/home/software-rasteriser/main.cpp
 	<iostream>
 	<stdint.h>
 	<SDL.h>
@@ -1149,6 +1149,7 @@
 	<Obj2.h>
 	<stdio.h>
 	<stdlib.h>
+	<time.h>
 
 1326954605 /home/software-rasteriser/SDL/include/SDL.h
 	"SDL_main.h"
@@ -1331,7 +1332,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1486246072 /home/software-rasteriser/Rasterizer.h
+1486931676 /home/software-rasteriser/Rasterizer.h
 	<vector>
 	<iostream>
 	<Color.h>

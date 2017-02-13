@@ -7,6 +7,7 @@
 #include <Obj2.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 using namespace std;
 
 
@@ -76,11 +77,39 @@ int main(int argc, char**argv)
 	rasterizer.SetFrameBuffer((uint32_t*)screen->pixels, SCREEN_WIDTH, SCREEN_HEIGHT);
     Obj2 obj("cube_VT_VN.obj"/*"sphereUV.obj"*/);
     obj.loadAll();
-    //obj.printAll();
-    //system("pause");
+    ////////////////
+    //delta time
+    clock_t lastTime = SDL_GetTicks();
+    float oneSecCount = 0.0f;
+    ////////////////
+    float yAngle = 0.0f;
 	bool go = true;
+	//--------------------------------------------------------------------
 	while (go)
 	{
+        /////////////////////////////////////
+        //delta time
+        clock_t currentTime = SDL_GetTicks();//clock();
+        float deltaTs = (float) (currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+        printf("%f \n", deltaTs);
+
+
+        //1 second event counter
+        if(oneSecCount >= 1.0f)
+        {
+            //do stuff every 1 sec
+            //yAngle += 5.0f;
+
+            //////////////////////
+            oneSecCount = 0.0f;
+        }
+        else
+        {
+            oneSecCount += deltaTs;
+        }
+        yAngle++;
+	    /////////////////////////////////////
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -91,6 +120,7 @@ int main(int argc, char**argv)
 				{
 				case SDLK_d:
 					printf("d");
+					yAngle++;
 					break;
 				case SDLK_ESCAPE:
 					go = false;
@@ -111,7 +141,7 @@ int main(int argc, char**argv)
 				break;
 			}
 		}
-		//==============
+		///////////////////////////////////
         SDL_Rect scr;
         scr.x = 0;
         scr.y = 0;
@@ -125,10 +155,10 @@ int main(int argc, char**argv)
 
         Color color3(1.0f,1.0f,1.0f,1.0f);
 
-        printf("%f %f %f \n %f %f %f \n %f %f %f  \n \n",
-               obj.VRTE[0], obj.VRTE[1], obj.VRTE[2],
-               obj.VRTE[3], obj.VRTE[4], obj.VRTE[5],
-               obj.VRTE[6], obj.VRTE[7], obj.VRTE[8]);
+//        printf("%f %f %f \n %f %f %f \n %f %f %f  \n \n",
+//               obj.VRTE[0], obj.VRTE[1], obj.VRTE[2],
+//               obj.VRTE[3], obj.VRTE[4], obj.VRTE[5],
+//               obj.VRTE[6], obj.VRTE[7], obj.VRTE[8]);
         //Color color0(obj.VRTE[0], obj.VRTE[1], obj.VRTE[2], 1.0f);
         //Color color1(obj.VRTE[3], obj.VRTE[4], obj.VRTE[5], 1.0f);
         //Color color2(obj.VRTE[6], obj.VRTE[7], obj.VRTE[8], 1.0f);
@@ -142,31 +172,35 @@ int main(int argc, char**argv)
         glm::vec4 v1(obj.VRTE[3], obj.VRTE[4], obj.VRTE[5], 1.0f);
         glm::vec4 v2(obj.VRTE[6], obj.VRTE[7], obj.VRTE[8], 1.0f);
 
-        glm::mat4 _modelMatrix = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 _viewMatrix = glm::translate( glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f));
+        glm::mat4 _modelMatrix = glm::translate(glm::scale(glm::rotate(glm::mat4(1.0f), (yAngle *glm::pi<float>() )/180.0f, glm::vec3(0.0f, 1.0f, .0f)), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 _viewMatrix = glm::translate( glm::rotate(glm::mat4(1.0f), (0.0f *glm::pi<float>() )/180.0f, glm::vec3(0.0f, 1.0f, .0f)), glm::vec3(0.0f, 0.0f, -5.0f));
         glm::mat4 _projectionMatrix = glm::perspectiveFov<float>(45.0f,SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 2000.0f);
         glm::mat4 _MVP = _projectionMatrix * _viewMatrix * _modelMatrix;
 
 
         //draw border
         rasterizer.DrawLine(&color3, glm::ivec2(0, 0), &color3, glm::ivec2(SCREEN_WIDTH-1, 0));
-        rasterizer.DrawLine(&color3, glm::ivec2(0, SCREEN_HEIGHT-1), &color3, glm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+        rasterizer.DrawLine(&color3, glm::ivec2(0, SCREEN_HEIGHT-1), &color3, glm::ivec2(SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1));
         rasterizer.DrawLine(&color3, glm::ivec2(0, 0), &color3, glm::ivec2(0, SCREEN_HEIGHT-1));
         rasterizer.DrawLine(&color3, glm::ivec2(SCREEN_WIDTH-1, 0), &color3, glm::ivec2(SCREEN_WIDTH-1, SCREEN_HEIGHT-1));
 
-        v0 = _MVP*v0;
-        v1 = _MVP*v1;
-        v2 = _MVP*v2;
+        //rasterizer.DrawLine(&color3, glm::ivec2(500, 500), &color3, glm::ivec2(500, 0));
 
-        glm::vec2 p0((v0.x / v0.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y / v0.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
-        glm::vec2 p1((v1.x / v1.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y / v1.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
-        glm::vec2 p2((v2.x / v2.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y / v2.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        //v0 = _MVP*v0;
+        //v1 = _MVP*v1;
+        //v2 = _MVP*v2;
 
+        //glm::vec2 p0((v0.x / v0.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y / v0.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        //glm::vec2 p1((v1.x / v1.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y / v1.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        //glm::vec2 p2((v2.x / v2.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y / v2.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
 
+        //printf("\n %f %f %f \n",v0.x,v0.y, v0.w);
+        //printf("%f %f %f \n",v1.x, v1.y, v1.w);
+        //printf("%f %f %f \n",v2.x, v2.y, v2.w);
         /////////////////////////////////////////
         //rasterizer.DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
-        rasterizer.DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
-        //rasterizer.DrawTriangles(&obj.vertices, _MVP);
+        //rasterizer.DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
+        rasterizer.DrawTriangles(&obj.vertices, _MVP);
 
         SDL_Flip(screen);
         SDL_Delay(10);

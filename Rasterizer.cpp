@@ -20,22 +20,121 @@ void Rasterizer::SetPixel(glm::ivec2 _pos, Color * _color)
 
 void Rasterizer::DrawLine(Color * _color0, glm::ivec2 _pos0, Color * _color1, glm::ivec2 _pos1)
 {
-	glm::vec2 v = _pos1 - _pos0;
-	glm::vec2 vn = glm::normalize(v);
-	float vm = glm::length(v);
+//	glm::vec2 v = _pos1 - _pos0;
+//	glm::vec2 vn = glm::normalize(v);
+//	float vm = glm::length(v);
+//
+//
+//
+//	for (float i = 1; i < vm+1; i++)
+//	{
+//		float rt1 = i / vm;
+//		float rt0 = 1 - rt1;
+//		Color c = (*_color0 * rt0) + (*_color1 * rt1);
+//		glm::vec2 vi = vn * i;
+//
+//		SetPixel(_pos0 + (glm::ivec2)vi, &c);
+//
+//	}
+//
 
 
 
-	for (float i = 1; i < vm+1; i++)
-	{
-		float rt1 = i / vm;
-		float rt0 = 1 - rt1;
-		Color c = (*_color0 * rt0) + (*_color1 * rt1);
-		glm::vec2 vi = vn * i;
-		SetPixel(_pos0 + (glm::ivec2)vi, &c);
+    int x0 = _pos0.x;
+    int y0 = _pos0.y;
+
+    int x1 = _pos1.x;
+    int y1 = _pos1.y;
+
+    bool steep = false;
+    if ( std::abs(x1 - x0) < std::abs(y1 - y0) )
+    {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+        steep = true;
+    }
+    if (x0>x1)
+    {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+
+    if(dx == 0)
+        return;
+
+    float dyDx = glm::abs((float)dy/(float)dx);
 
 
-	}
+    float error = dyDx - 0.5f;
+
+    int y = y0;
+
+    for(int x = x0; x < x1; x++)
+    {
+        if(steep)
+        {
+            SetPixel(glm::vec2(y, x), _color0);
+        }
+        else
+        {
+            SetPixel(glm::vec2(x, y), _color0);
+        }
+        error = error + dyDx;
+        if(error >= 0.5f)
+        {
+            y += (y1>y0?1:-1);
+            error = error - 1;
+        }
+    }
+
+
+
+//    int x0 = _pos0.x;
+//    int x1 = _pos1.x;
+//    int y0 = _pos0.y;
+//    int y1 = _pos1.y;
+//
+//    bool steep = false;
+//    if (std::abs(x0-x1)<std::abs(y0-y1))
+//    {
+//        std::swap(x0, y0);
+//        std::swap(x1, y1);
+//        steep = true;
+//    }
+//    if (x0>x1)
+//    {
+//        std::swap(x0, x1);
+//        std::swap(y0, y1);
+//    }
+//    int dx = x1-x0;
+//    int dy = y1-y0;
+//    int derror2 = std::abs(dy)*2;
+//    int error2 = 0;
+//    int y = y0;
+//    for (int x=x0; x<=x1; x++)
+//    {
+//        if (steep)
+//        {
+//            SetPixel(glm::vec2(y,x), _color0);
+//            //image.set(y, x, color);
+//        }
+//        else
+//        {
+//            SetPixel(glm::vec2(x,y), _color0);
+//            //image.set(x, y, color);
+//        }
+//        error2 += derror2;
+//        if (error2 > dx)
+//        {
+//            y += (y1>y0?1:-1);
+//            error2 -= dx*2;
+//        }
+//    }
+
+
 
 
 }
@@ -258,20 +357,30 @@ int Rasterizer::DrawTriangles(std::vector<glm::vec3> * _vertexData, glm::mat4 _M
         glm::vec4 v1 = _MVP * glm::vec4((*_vertexData)[i+1].x, (*_vertexData)[i+1].y, (*_vertexData)[i+1].z, 1.0f);
         glm::vec4 v2 = _MVP * glm::vec4((*_vertexData)[i+2].x, (*_vertexData)[i+2].y, (*_vertexData)[i+2].z, 1.0f);
 
-        glm::vec2 p0((v0.x / v0.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y / v0.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
-        glm::vec2 p1((v1.x / v1.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y / v1.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
-        glm::vec2 p2((v2.x / v2.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y / v2.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        glm::vec2 p0((v0.x)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        glm::vec2 p1((v1.x)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        glm::vec2 p2((v2.x)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
 
-        //glm::vec2 p0(v0.x / v0.w + SCREEN_WIDTH / 2, v0.y / v0.w + SCREEN_HEIGHT / 2);
-        //glm::vec2 p1(v1.x / v1.w + SCREEN_WIDTH / 2, v1.y / v1.w + SCREEN_HEIGHT / 2);
-        //glm::vec2 p2(v2.x / v2.w + SCREEN_WIDTH / 2, v2.y / v2.w + SCREEN_HEIGHT / 2);
+        if(v0.w > 0.0f)
+        {
+            p0 = glm::vec2((v0.x / v0.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v0.y / v0.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        }
+        if(v1.w > 0.0f)
+        {
+            p1 = glm::vec2((v1.x / v1.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v1.y / v1.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        }
+        if(v2.w > 0.0f)
+        {
+            p2 = glm::vec2((v2.x / v2.w)*SCREEN_WIDTH/2  + SCREEN_WIDTH / 2, (v2.y / v2.w)*SCREEN_HEIGHT/2 + SCREEN_HEIGHT / 2);
+        }
+        if(v0.z > 0.0f)
+        {
+            DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
+        }
+
         //DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
-        //printf("\n  %f, %f \n", p0.x, p0.y);
-        //printf("    %f, %f \n", p1.x, p1.y);
-        //printf("    %f, %f \n", p2.x, p2.y);
-        //DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
-        DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
     }
+
 
     return 0;
 }

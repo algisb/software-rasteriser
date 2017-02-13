@@ -28,6 +28,7 @@ public:
 	void DrawTriangle1(Color * _color0, glm::ivec2 _pos0, Color * _color1, glm::ivec2 _pos1, Color * _color2, glm::ivec2 _pos2);
 	bool pointInTriangle2D(glm::ivec2 _point, glm::ivec2 _pos0, glm::ivec2 _pos1, glm::ivec2 _pos2);
 	int DrawTriangles(std::vector<glm::vec3> * _vertexData, glm::mat4 _MVP);
+	int clearScreen();
 };
 
 #endif //RASTERIZER_H
