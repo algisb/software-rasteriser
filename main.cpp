@@ -56,7 +56,7 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination)
 	SDL_BlitSurface(source, NULL, destination, &offset);
 }
 */
-int main(int argc, char**argv)
+int main(int argc, char*argv[])
 {
 	//Initialize all SDL subsystems
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
@@ -79,6 +79,7 @@ int main(int argc, char**argv)
     obj.loadAll();
     ////////////////
     //delta time
+
     clock_t lastTime = SDL_GetTicks();
     float oneSecCount = 0.0f;
     ////////////////
@@ -210,3 +211,4 @@ int main(int argc, char**argv)
 
 	return 0;
 }
+

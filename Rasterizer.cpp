@@ -376,9 +376,10 @@ int Rasterizer::DrawTriangles(std::vector<glm::vec3> * _vertexData, glm::mat4 _M
         if(v0.z > 0.0f)
         {
             DrawWireTriangle(&color0, p0, &color1, p1, &color2, p2);
+            //DrawTriangle1(&color0, p0, &color0, p1, &color0, p2);
         }
 
-        //DrawTriangle1(&color0, p0, &color1, p1, &color2, p2);
+
     }
 
 
